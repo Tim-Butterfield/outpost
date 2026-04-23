@@ -1,0 +1,15 @@
+# Go build artifacts
+/bin/
+/dist/
+*.exe
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+/cover.out
+/coverage.out
+/vendor/
+
+# Logs anywhere in the tree
+*.log
