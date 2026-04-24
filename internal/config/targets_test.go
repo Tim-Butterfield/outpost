@@ -207,34 +207,37 @@ func TestLoadTargets_Empty(t *testing.T) {
 	}
 }
 
-func TestLoadTargets_DiscoverXDG(t *testing.T) {
+func TestLoadTargets_DiscoverDefaultLocation(t *testing.T) {
+	// Exercises the default-location discovery path. Setting both
+	// env vars to the same tempdir covers whichever branch
+	// defaultFilePath takes on the current OS.
 	dir := t.TempDir()
 	configDir := filepath.Join(dir, "outpost")
 	if err := os.MkdirAll(configDir, 0755); err != nil {
 		t.Fatal(err)
 	}
 	content := `
-default = "from-xdg"
+default = "from-default-location"
 
-[target.from-xdg]
+[target.from-default-location]
 transport = "file"
-path      = "/tmp/xdg"
+path      = "/tmp/outpost-test"
 `
 	if err := os.WriteFile(filepath.Join(configDir, "targets.toml"), []byte(content), 0644); err != nil {
 		t.Fatal(err)
 	}
 	t.Setenv("XDG_CONFIG_HOME", dir)
-	t.Setenv("APPDATA", filepath.Join(t.TempDir(), "appdata-unused"))
+	t.Setenv("APPDATA", dir)
 
 	tc, err := LoadTargets("")
 	if err != nil {
 		t.Fatal(err)
 	}
-	if tc.Default != "from-xdg" {
-		t.Errorf("Default=%q, want from-xdg", tc.Default)
+	if tc.Default != "from-default-location" {
+		t.Errorf("Default=%q, want from-default-location", tc.Default)
 	}
-	if _, ok := tc.Target["from-xdg"]; !ok {
-		t.Errorf("from-xdg target not loaded; targets=%v", tc.Target)
+	if _, ok := tc.Target["from-default-location"]; !ok {
+		t.Errorf("from-default-location target not loaded; targets=%v", tc.Target)
 	}
 }
 
