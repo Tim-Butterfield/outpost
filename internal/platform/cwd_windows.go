@@ -37,6 +37,13 @@ const (
 // (REMOTE_NAME_INFO_LEVEL=2) exist but universal is what we want.
 const universalNameInfoLevel = 1
 
+// universalNameInfo mirrors the Win32 UNIVERSAL_NAME_INFOW struct
+// returned by WNetGetUniversalNameW at UNIVERSAL_NAME_INFO_LEVEL:
+// a single pointer into the tail of the caller-provided buffer.
+type universalNameInfo struct {
+	LpUniversalName *uint16
+}
+
 // ResolveCWDSource translates a Windows CWD into the UNC path of its
 // backing network share. Returns empty (with nil error) for local
 // drives and for paths that are already UNC.
@@ -189,15 +196,16 @@ func getUniversalName(path string) (string, error) {
 	if ret != noError {
 		return "", nil
 	}
-	// The first pointer-sized slot of the struct is lpUniversalName,
-	// which points into this same buffer. Dereference it as *uint16
-	// and read the NUL-terminated UTF-16 string.
-	if len(buf) < int(unsafe.Sizeof(uintptr(0))) {
+	// Reinterpret the head of the buffer as the UNIVERSAL_NAME_INFOW
+	// struct. Its LpUniversalName field points into the tail of the
+	// same buffer we still hold a reference to, so the string stays
+	// alive until we're done reading it.
+	if len(buf) < int(unsafe.Sizeof(universalNameInfo{})) {
 		return "", nil
 	}
-	ptrVal := *(*uintptr)(unsafe.Pointer(&buf[0]))
-	if ptrVal == 0 {
+	info := (*universalNameInfo)(unsafe.Pointer(&buf[0]))
+	if info.LpUniversalName == nil {
 		return "", nil
 	}
-	return windows.UTF16PtrToString((*uint16)(unsafe.Pointer(ptrVal))), nil
+	return windows.UTF16PtrToString(info.LpUniversalName), nil
 }
