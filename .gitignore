@@ -1,15 +1,25 @@
 # Go build artifacts
 /bin/
 /dist/
+/outpost
 *.exe
 *.dll
 *.so
 *.dylib
 *.test
 *.out
-/cover.out
-/coverage.out
-/vendor/
+
+# Go workspace files (local-only, per-developer)
+go.work
+go.work.sum
+
+# Environment / secrets
+.env
+.env.local
+
+# OS metadata
+.DS_Store
+Thumbs.db
 
 # Logs anywhere in the tree
 *.log
