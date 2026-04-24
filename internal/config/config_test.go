@@ -127,28 +127,30 @@ name = "bad"
 	}
 }
 
-func TestLoad_DiscoverXDG(t *testing.T) {
-	// When no explicit path is given and XDG_CONFIG_HOME points at
-	// a directory containing outpost/outpost.toml, that file is
-	// used.
+func TestLoad_DiscoverDefaultLocation(t *testing.T) {
+	// When no explicit path is given, Load() reads from the
+	// per-platform default directory: $XDG_CONFIG_HOME/outpost/
+	// on Unix/macOS, %APPDATA%\outpost\ on Windows. Setting both
+	// env vars to the same tempdir lets this test exercise whichever
+	// branch defaultFilePath takes on the current OS.
 	dir := t.TempDir()
 	configDir := filepath.Join(dir, "outpost")
 	if err := os.MkdirAll(configDir, 0755); err != nil {
 		t.Fatal(err)
 	}
 	if err := os.WriteFile(filepath.Join(configDir, "outpost.toml"),
-		[]byte(`[responder]`+"\n"+`name = "via-xdg"`+"\n"), 0644); err != nil {
+		[]byte(`[responder]`+"\n"+`name = "via-default-location"`+"\n"), 0644); err != nil {
 		t.Fatal(err)
 	}
 	t.Setenv("XDG_CONFIG_HOME", dir)
-	t.Setenv("APPDATA", filepath.Join(t.TempDir(), "appdata-unused"))
+	t.Setenv("APPDATA", dir)
 
 	c, err := Load("")
 	if err != nil {
 		t.Fatal(err)
 	}
-	if c.Responder.Name != "via-xdg" {
-		t.Errorf("Name=%q, want via-xdg", c.Responder.Name)
+	if c.Responder.Name != "via-default-location" {
+		t.Errorf("Name=%q, want via-default-location", c.Responder.Name)
 	}
 }
 
