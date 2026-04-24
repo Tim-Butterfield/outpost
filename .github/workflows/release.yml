@@ -1,0 +1,49 @@
+# Release workflow for outpost.
+#
+# Triggered by semver tag pushes (e.g. v1.0.0). Runs goreleaser to
+# produce multi-arch archives, SHA256 checksums, cosign signatures,
+# SBOMs, and GitHub Attestations.
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  id-token: write # cosign keyless signing
+  packages: write # in case of OCI artifacts
+  attestations: write # GitHub Attestations
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.26"
+          check-latest: true
+
+      - uses: sigstore/cosign-installer@v3
+
+      - uses: anchore/sbom-action/download-syft@v0
+
+      - name: goreleaser
+        uses: goreleaser/goreleaser-action@v6
+        with:
+          distribution: goreleaser
+          version: "~> v2"
+          args: release --clean
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Generate attestations
+        uses: actions/attest-build-provenance@v1
+        with:
+          subject-path: "dist/*"
