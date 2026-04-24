@@ -22,25 +22,32 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          # Tier 1: native runners, full build + race-tested.
+          # Tier 1: native runners. race_flag is "-race" where Go's
+          # race detector is supported, empty otherwise.
           - os: ubuntu-latest
             goos: linux
             goarch: amd64
+            race_flag: "-race"
           - os: ubuntu-24.04-arm
             goos: linux
             goarch: arm64
+            race_flag: "-race"
           - os: macos-13
             goos: darwin
             goarch: amd64
+            race_flag: "-race"
           - os: macos-latest
             goos: darwin
             goarch: arm64
+            race_flag: "-race"
           - os: windows-latest
             goos: windows
             goarch: amd64
+            race_flag: "-race"
           - os: windows-11-arm
             goos: windows
             goarch: arm64
+            race_flag: "" # race detector not supported on windows/arm64
     steps:
       - uses: actions/checkout@v4
 
@@ -55,8 +62,8 @@ jobs:
       - name: go vet
         run: go vet ./...
 
-      - name: go test -race
-        run: go test -race -timeout 5m ./...
+      - name: go test ${{ matrix.race_flag }}
+        run: go test ${{ matrix.race_flag }} -timeout 5m ./...
 
   tier2-build:
     name: Cross-compile ${{ matrix.goos }}/${{ matrix.goarch }}
