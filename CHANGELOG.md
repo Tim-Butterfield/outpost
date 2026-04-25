@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org).
 The library under `pkg/outpost/` versions independently of the
 binary, starting at `v0.x.y`.
 
-## [1.0.0] -- TBD
+## [1.0.0] -- 2026-04-24
 
 First public release. File-RPC bridge for remote AI execution.
 
