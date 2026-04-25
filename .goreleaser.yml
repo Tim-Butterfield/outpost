@@ -80,7 +80,7 @@ release:
   github:
     owner: Tim-Butterfield
     name: outpost
-  draft: true
+  draft: false
   prerelease: auto
   header: |
     ## outpost {{ .Tag }}
