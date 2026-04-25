@@ -514,7 +514,7 @@ responder changes; only the no-op implementation is shipped.
 
 ## 7. Cross-platform targets
 
-Tier 1 (officially supported, CI-tested, release binaries shipped):
+Tier 1 (officially supported, release binaries shipped):
 
 - `linux/amd64`, `linux/arm64`
 - `darwin/amd64`, `darwin/arm64`
@@ -524,9 +524,13 @@ Tier 2 (builds, not tested):
 
 - `freebsd/amd64`, `openbsd/amd64`
 
-CI runs `go build` + `go test -race ./...` on native runners for
-every tier-1 target. Tier-2 targets get build-only cross-compile
-checks.
+Per-push CI runs native `go build` + `go test -race ./...` on five
+of the six tier-1 targets. `darwin/amd64` is cross-compiled in CI
+(build-only) because the GitHub-hosted `macos-13` Intel runner pool
+is deprecated and effectively unavailable as of 2026. Native
+`darwin/amd64` test execution is performed locally on Apple Silicon
+hosts via Rosetta (`GOARCH=amd64 go test ./...`) before each release.
+Tier-2 targets get build-only cross-compile checks.
 
 ## 8. Testing and release
 

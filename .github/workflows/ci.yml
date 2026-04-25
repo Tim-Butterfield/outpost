@@ -1,6 +1,11 @@
 # Continuous integration for outpost.
 #
-# Native runners cover all six tier-1 targets per docs/DESIGN.md §7.
+# Native runners cover five of the six tier-1 targets per
+# docs/DESIGN.md §7. darwin/amd64 is cross-compiled in the tier2-build
+# job because the GitHub-hosted macos-13 runner pool is deprecated and
+# effectively unavailable as of 2026; native amd64 darwin validation
+# is done locally via Rosetta on Apple Silicon hosts before each
+# release.
 # Tier-2 (FreeBSD / OpenBSD amd64) gets a cross-compile build-only
 # check.
 name: CI
@@ -31,10 +36,6 @@ jobs:
           - os: ubuntu-24.04-arm
             goos: linux
             goarch: arm64
-            race_flag: "-race"
-          - os: macos-13
-            goos: darwin
-            goarch: amd64
             race_flag: "-race"
           - os: macos-latest
             goos: darwin
@@ -72,6 +73,10 @@ jobs:
       fail-fast: false
       matrix:
         include:
+          # darwin/amd64 is tier-1 by support status but build-only in
+          # CI: see header comment.
+          - goos: darwin
+            goarch: amd64
           - goos: freebsd
             goarch: amd64
           - goos: openbsd
