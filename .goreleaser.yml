@@ -50,6 +50,8 @@ archives:
     files:
       - LICENSE
       - README.md
+      - AGENTS.md
+      - CHANGELOG.md
       - docs/**/*
     format_overrides:
       - goos: windows

@@ -8,6 +8,17 @@ and this project adheres to [Semantic Versioning](https://semver.org).
 The library under `pkg/outpost/` versions independently of the
 binary, starting at `v0.x.y`.
 
+## [1.0.1] -- 2026-04-28
+
+Packaging fix release. No code changes.
+
+### Fixed
+
+- Release archives now include `AGENTS.md` (AI usage
+  instructions) and `CHANGELOG.md` alongside `LICENSE`,
+  `README.md`, and `docs/`. The v1.0.0 archives were missing
+  both files.
+
 ## [1.0.0] -- 2026-04-24
 
 First public release. File-RPC bridge for remote AI execution.
