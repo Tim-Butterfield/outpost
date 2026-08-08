@@ -25,6 +25,8 @@ No open port. Any filesystem both sides can see is enough.
 
 ## Installation
 
+### Download a release
+
 Download the archive for your OS and architecture from the
 [GitHub Releases](https://github.com/Tim-Butterfield/outpost/releases)
 page, extract it, and put `outpost` on your `PATH`.
@@ -47,6 +49,33 @@ Authenticode certificate, so your OS will warn on first run:
 Supply-chain trust is via SHA256 checksums, cosign signatures on the
 checksums file, and GitHub Attestations. See the release notes for
 the `cosign verify-blob` invocation.
+
+### Build from source
+
+Requires Go 1.26.2 or newer. Nothing else — outpost has one direct
+dependency and builds with `CGO_ENABLED=0`.
+
+```sh
+go install github.com/Tim-Butterfield/outpost/cmd/outpost@latest
+```
+
+That installs `outpost` into `$(go env GOPATH)/bin` (`~/go/bin` by
+default). A locally compiled binary is not subject to the Gatekeeper
+and SmartScreen prompts above.
+
+From a clone, the `Makefile` wraps the same build and stamps the
+version the way a release binary carries it:
+
+```sh
+make install     # into $(go env GOPATH)/bin
+make build       # ./outpost for the host platform
+make build-all   # cross-compile into bin/<os>-<arch>/
+```
+
+Run `make` with no target to list everything available. `make
+build-all` produces the `bin/<os>-<arch>/outpost` layout that the
+service examples below point `OUTPOST_BIN` at; override the platform
+set with `make build-all PLATFORMS="linux-amd64 windows-amd64"`.
 
 ## Quick start
 

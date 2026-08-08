@@ -8,6 +8,17 @@ and this project adheres to [Semantic Versioning](https://semver.org).
 The library under `pkg/outpost/` versions independently of the
 binary, starting at `v0.x.y`.
 
+## [Unreleased]
+
+### Added
+
+- `Makefile` with `install`, `build`, `build-all`, `test`, `vet`,
+  `cover`, `check`, `snapshot`, and `clean` targets. Build flags
+  mirror `.goreleaser.yml`, so `make install` produces a binary
+  equivalent to a released one, version stamp included.
+- README documents building from source (`go install` and
+  `make install`) alongside the release-archive download.
+
 ## [1.0.1] -- 2026-04-28
 
 Packaging fix release. No code changes.
